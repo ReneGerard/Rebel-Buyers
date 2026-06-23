@@ -10,6 +10,7 @@ export type Database = {
           owner_id: string;
           title: string;
           description: string | null;
+          share_slug: string;
           created_at: string;
         };
         Insert: {
@@ -17,6 +18,7 @@ export type Database = {
           owner_id: string;
           title: string;
           description?: string | null;
+          share_slug?: string;
           created_at?: string;
         };
         Update: {
@@ -24,6 +26,7 @@ export type Database = {
           owner_id?: string;
           title?: string;
           description?: string | null;
+          share_slug?: string;
           created_at?: string;
         };
         Relationships: [];
@@ -65,6 +68,45 @@ export type Database = {
             columns: ["wishlist_id"];
             isOneToOne: false;
             referencedRelation: "wishlists";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      purchases: {
+        Row: {
+          id: string;
+          item_id: string;
+          purchased_by_name: string | null;
+          purchased_by_user_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          purchased_by_name?: string | null;
+          purchased_by_user_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          item_id?: string;
+          purchased_by_name?: string | null;
+          purchased_by_user_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "purchases_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: true;
+            referencedRelation: "items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "purchases_purchased_by_user_id_fkey";
+            columns: ["purchased_by_user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
             referencedColumns: ["id"];
           },
         ];
