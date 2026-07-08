@@ -39,9 +39,16 @@ export function AddItemForm({ wishlistId }: { wishlistId: string }) {
   return (
     <form ref={formRef} action={formAction} className="space-y-3">
       <div>
-        <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
-          Titre *
-        </label>
+        <div className="mb-1 flex items-baseline justify-between">
+          <label htmlFor="title" className="text-sm font-medium text-gray-700">
+            Titre *
+          </label>
+          {title.length >= 100 && (
+            <span className={`text-xs tabular-nums ${title.length >= 120 ? "text-red-500" : "text-gray-400"}`}>
+              {title.length}/120
+            </span>
+          )}
+        </div>
         <input
           id="title"
           name="title"

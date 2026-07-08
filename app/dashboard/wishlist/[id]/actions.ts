@@ -54,6 +54,12 @@ export async function fetchLinkMetadata(rawUrl: string): Promise<LinkMetadata | 
   }
 }
 
+function truncateAtWord(raw: string, max: number): string {
+  if (raw.length <= max) return raw;
+  const cut = raw.slice(0, max).replace(/\s+\S*$/, "");
+  return (cut || raw.slice(0, max)) + "…";
+}
+
 function parseMeta(html: string): LinkMetadata {
   const head = html.match(/<head[\s\S]*?<\/head>/i)?.[0] ?? html.slice(0, 50_000);
   const tags: Record<string, string> = {};
@@ -67,8 +73,9 @@ function parseMeta(html: string): LinkMetadata {
   }
   const rawPrice = tags["og:price:amount"] ?? tags["product:price:amount"] ?? tags["og:price"];
   const priceMatch = rawPrice?.match(/\d+(?:[.,]\d+)?/);
+  const rawTitle = tags["og:title"];
   return {
-    title: tags["og:title"] || undefined,
+    title: rawTitle ? truncateAtWord(rawTitle, 80) : undefined,
     imageUrl: tags["og:image"] || undefined,
     price: priceMatch ? priceMatch[0].replace(",", ".") : undefined,
   };
