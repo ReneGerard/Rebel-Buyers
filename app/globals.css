@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+@theme {
+  /* Brand — warm amber-orange */
+  --color-brand-50: #fff8f0;
+  --color-brand-100: #ffe8cc;
+  --color-brand-200: #ffc680;
+  --color-brand-400: #f07820;
+  --color-brand-500: #e8630a;
+  --color-brand-600: #c4500a;
+  --color-brand-700: #9c3d08;
+
+  /* Warm neutrals */
+  --color-warm-50: #fafaf8;
+  --color-warm-100: #f4f3ef;
+  --color-warm-200: #e8e5df;
+  --color-warm-300: #d4cfc8;
+  --color-warm-400: #a8a29e;
+  --color-warm-500: #78716c;
+  --color-warm-600: #57534e;
+  --color-warm-700: #44403c;
+  --color-warm-900: #1c1917;
+
+  /* Typography */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-warm-50);
+    color: var(--color-warm-900);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-warm-300 bg-white px-5 py-2.5 text-sm font-medium text-warm-700 transition-colors hover:bg-warm-100 focus:outline-none focus:ring-4 focus:ring-warm-200 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center text-sm text-warm-500 transition-colors hover:text-warm-900 focus:outline-none;
+  }
+
+  .card {
+    @apply rounded-2xl border border-warm-200 bg-white shadow-sm;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 text-sm text-warm-900 placeholder:text-warm-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-warm-700;
+  }
+}

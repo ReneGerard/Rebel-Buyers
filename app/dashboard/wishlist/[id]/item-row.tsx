@@ -26,8 +26,8 @@ export function ItemRow({ item, wishlistId }: { item: Item; wishlistId: string }
     initialState
   );
 
-  // Reset back to view mode once a submission resolves successfully — done during
-  // render (not an effect) per React's "adjusting state when a value changes" pattern.
+  // Reset to view mode after a successful update — done during render per React's
+  // "adjusting state when a value changes" pattern.
   const [handledUpdateState, setHandledUpdateState] = useState(updateState);
   if (updateState !== handledUpdateState) {
     setHandledUpdateState(updateState);
@@ -38,80 +38,74 @@ export function ItemRow({ item, wishlistId }: { item: Item; wishlistId: string }
 
   if (mode === "edit") {
     return (
-      <li className="rounded-lg border border-gray-200 bg-white p-4">
+      <li className="card p-5">
         <form action={updateFormAction} className="space-y-3">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Titre *</label>
+            <label className="label">Titre *</label>
             <input
               name="title"
               required
               maxLength={120}
               defaultValue={item.title}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Lien</label>
+            <label className="label">Lien marchand</label>
             <input
               name="merchantUrl"
               type="url"
               defaultValue={item.merchant_url ?? ""}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="input"
             />
           </div>
 
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="mb-1 block text-sm font-medium text-gray-700">Prix</label>
+              <label className="label">Prix (€)</label>
               <input
                 name="price"
                 type="number"
                 min="0"
                 step="0.01"
                 defaultValue={item.price ?? ""}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                className="input"
               />
             </div>
             <div className="flex-1">
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Image (URL)
-              </label>
+              <label className="label">Image (URL)</label>
               <input
                 name="imageUrl"
                 type="url"
                 defaultValue={item.image_url ?? ""}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                className="input"
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+            <label className="label">Note</label>
             <textarea
               name="note"
               rows={2}
               maxLength={500}
               defaultValue={item.note ?? ""}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="input resize-none"
             />
           </div>
 
-          {updateState.error && <p className="text-sm text-red-600">{updateState.error}</p>}
+          {updateState.error && (
+            <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">
+              {updateState.error}
+            </p>
+          )}
 
           <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isUpdatePending}
-              className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-            >
-              {isUpdatePending ? "..." : "Enregistrer"}
+            <button type="submit" disabled={isUpdatePending} className="btn-primary">
+              {isUpdatePending ? "Enregistrement…" : "Enregistrer"}
             </button>
-            <button
-              type="button"
-              onClick={() => setMode("view")}
-              className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700"
-            >
+            <button type="button" onClick={() => setMode("view")} className="btn-secondary">
               Annuler
             </button>
           </div>
@@ -121,37 +115,41 @@ export function ItemRow({ item, wishlistId }: { item: Item; wishlistId: string }
   }
 
   return (
-    <li className="flex gap-4 rounded-lg border border-gray-200 bg-white p-4">
+    <li className="card flex gap-4 p-4">
       {item.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element -- external merchant URLs, can't whitelist every domain for next/image
+        // eslint-disable-next-line @next/next/no-img-element -- external merchant URLs
         <img
           src={item.image_url}
           alt={item.title}
-          className="h-16 w-16 rounded-md object-cover"
+          className="h-20 w-20 flex-shrink-0 rounded-xl object-cover"
         />
       )}
-      <div className="flex-1">
-        <h3 className="font-medium text-gray-900">{item.title}</h3>
-        {item.price !== null && <p className="text-sm text-gray-600">{item.price} €</p>}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-warm-900">{item.title}</h3>
+        {item.price !== null && (
+          <p className="mt-0.5 text-sm font-medium text-brand-600">{item.price} €</p>
+        )}
         {item.merchant_url && (
           <a
             href={item.merchant_url}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-sm text-gray-500 underline"
+            className="mt-0.5 inline-block text-sm text-warm-400 underline hover:text-warm-600"
           >
             Voir le lien
           </a>
         )}
-        {item.note && <p className="mt-1 text-sm text-gray-500">{item.note}</p>}
+        {item.note && <p className="mt-1 text-sm text-warm-500">{item.note}</p>}
 
-        {deleteState.error && <p className="mt-1 text-sm text-red-600">{deleteState.error}</p>}
+        {deleteState.error && (
+          <p className="mt-1 text-sm text-red-600">{deleteState.error}</p>
+        )}
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-3 flex items-center gap-3">
           <button
             type="button"
             onClick={() => setMode("edit")}
-            className="text-sm font-medium text-gray-700 underline"
+            className="btn-secondary px-3 py-1.5 text-xs"
           >
             Éditer
           </button>
@@ -166,9 +164,9 @@ export function ItemRow({ item, wishlistId }: { item: Item; wishlistId: string }
             <button
               type="submit"
               disabled={isDeletePending}
-              className="text-sm font-medium text-red-600 underline disabled:opacity-50"
+              className="text-xs text-warm-400 underline hover:text-red-600 disabled:opacity-50"
             >
-              {isDeletePending ? "..." : "Supprimer"}
+              {isDeletePending ? "…" : "Supprimer"}
             </button>
           </form>
         </div>

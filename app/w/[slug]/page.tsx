@@ -34,8 +34,7 @@ export default async function PublicWishlistPage({
   const user = await getCurrentUser();
   const isOwner = user?.id === wishlist.owner_id;
 
-  // The owner must never see purchase status for their own list — skip the query
-  // entirely rather than fetching and hiding it, so there's nothing to leak.
+  // The owner must never see purchase status — skip the query entirely.
   let purchasedItemIds: string[] = [];
   if (!isOwner && items.length > 0) {
     const { data: purchases, error: purchasesError } = await supabase
@@ -54,16 +53,41 @@ export default async function PublicWishlistPage({
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-semibold">{wishlist.title}</h1>
-      {wishlist.description && (
-        <p className="mt-2 text-sm text-gray-600">{wishlist.description}</p>
-      )}
+    <>
+      {/* Hero header */}
+      <div className="bg-gradient-to-br from-brand-50 to-warm-100 border-b border-warm-200">
+        <div className="mx-auto max-w-2xl px-4 py-10">
+          {isOwner && (
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-warm-200 px-3 py-1 text-xs font-medium text-warm-600">
+              <span>👁</span>
+              <span>Tu es le créateur de cette liste — les achats sont cachés pour toi.</span>
+            </div>
+          )}
+          <h1 className="font-display text-3xl font-bold text-warm-900 sm:text-4xl">
+            {wishlist.title}
+          </h1>
+          {wishlist.description && (
+            <p className="mt-3 text-warm-600">{wishlist.description}</p>
+          )}
+          {!isOwner && (
+            <p className="mt-4 text-sm text-warm-500">
+              Clique sur <strong className="text-warm-700">🎁 Je l&apos;offre !</strong> pour réserver un cadeau — les autres voient qu&apos;il est pris, mais pas par qui.
+            </p>
+          )}
+        </div>
+      </div>
 
-      <section className="mt-8">
-        <h2 className="mb-3 text-lg font-medium">Items</h2>
+      <main className="mx-auto max-w-2xl px-4 py-8">
         {items.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucun item pour le moment.</p>
+          <div className="card flex flex-col items-center py-16 text-center">
+            <span className="text-5xl">🎁</span>
+            <p className="mt-5 font-display text-lg font-semibold text-warm-900">
+              La liste est encore vide
+            </p>
+            <p className="mt-2 text-sm text-warm-500">
+              Les items apparaîtront ici dès qu&apos;ils seront ajoutés.
+            </p>
+          </div>
         ) : (
           <ItemList
             wishlistId={wishlist.id}
@@ -72,7 +96,7 @@ export default async function PublicWishlistPage({
             isOwner={isOwner}
           />
         )}
-      </section>
-    </main>
+      </main>
+    </>
   );
 }

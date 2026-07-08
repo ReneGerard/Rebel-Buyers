@@ -36,9 +36,7 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (mode === "login") {
-      const { error: signInError } = await supabase.auth.signInWithPassword(
-        parsed.data
-      );
+      const { error: signInError } = await supabase.auth.signInWithPassword(parsed.data);
       setIsSubmitting(false);
       if (signInError) {
         setError(signInError.message);
@@ -64,14 +62,20 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-6 flex gap-2">
+    <main className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center px-4 py-12">
+      <div className="card w-full max-w-sm p-8">
+        <h1 className="font-display mb-6 text-center text-2xl font-bold text-warm-900">
+          {mode === "login" ? "Bon retour !" : "Créer un compte"}
+        </h1>
+
+        <div className="mb-6 flex gap-1 rounded-xl bg-warm-100 p-1">
           <button
             type="button"
             onClick={() => setMode("login")}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium ${
-              mode === "login" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              mode === "login"
+                ? "bg-white text-warm-900 shadow-sm"
+                : "text-warm-500 hover:text-warm-700"
             }`}
           >
             Connexion
@@ -79,8 +83,10 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setMode("signup")}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium ${
-              mode === "signup" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              mode === "signup"
+                ? "bg-white text-warm-900 shadow-sm"
+                : "text-warm-500 hover:text-warm-700"
             }`}
           >
             Inscription
@@ -89,7 +95,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="label">
               Email
             </label>
             <input
@@ -98,12 +104,13 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              placeholder="toi@exemple.com"
+              className="input"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="label">
               Mot de passe
             </label>
             <input
@@ -113,19 +120,24 @@ export default function LoginPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              placeholder="6 caractères minimum"
+              className="input"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          {info && <p className="text-sm text-green-600">{info}</p>}
+          {error && (
+            <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</p>
+          )}
+          {info && (
+            <p className="rounded-lg bg-green-50 px-4 py-2.5 text-sm text-green-700">{info}</p>
+          )}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            {isSubmitting ? "..." : mode === "login" ? "Se connecter" : "Créer un compte"}
+          <button type="submit" disabled={isSubmitting} className="btn-primary w-full py-3">
+            {isSubmitting
+              ? "Chargement…"
+              : mode === "login"
+                ? "Se connecter"
+                : "Créer mon compte"}
           </button>
         </form>
       </div>

@@ -21,36 +21,51 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Mes wishlists</h1>
-        <Link
-          href="/dashboard/wishlist/new"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white"
-        >
-          Créer une wishlist
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="font-display text-3xl font-bold text-warm-900">Mes wishlists</h1>
+        <Link href="/dashboard/wishlist/new" className="btn-primary">
+          + Nouvelle wishlist
         </Link>
       </div>
 
       {wishlists.length === 0 ? (
-        <p className="text-sm text-gray-500">Aucune wishlist pour le moment.</p>
+        <div className="card flex flex-col items-center py-20 text-center">
+          <span className="text-5xl">🎁</span>
+          <h2 className="font-display mt-5 text-xl font-semibold text-warm-900">
+            Ta première wishlist t&apos;attend
+          </h2>
+          <p className="mt-2 max-w-sm text-sm text-warm-500">
+            Crée une liste, ajoute tes envies, et partage le lien à tes proches.
+          </p>
+          <Link href="/dashboard/wishlist/new" className="btn-primary mt-6">
+            Créer ma première wishlist
+          </Link>
+        </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {wishlists.map((wishlist) => {
             const itemCount = wishlist.items[0]?.count ?? 0;
             return (
               <Link
                 key={wishlist.id}
                 href={`/dashboard/wishlist/${wishlist.id}`}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-gray-300 hover:shadow"
+                className="card block p-5 transition-shadow hover:shadow-md"
               >
-                <h2 className="font-medium text-gray-900">{wishlist.title}</h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  {itemCount} item{itemCount === 1 ? "" : "s"}
-                </p>
-                <p className="mt-2 text-xs text-gray-400">
-                  Créée le {new Date(wishlist.created_at).toLocaleDateString("fr-FR")}
-                </p>
+                <h2 className="font-display font-semibold text-warm-900">{wishlist.title}</h2>
+                {wishlist.description && (
+                  <p className="mt-1 line-clamp-2 text-sm text-warm-500">
+                    {wishlist.description}
+                  </p>
+                )}
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-sm text-warm-400">
+                    {itemCount} item{itemCount !== 1 ? "s" : ""}
+                  </span>
+                  <span className="text-xs text-warm-300">
+                    {new Date(wishlist.created_at).toLocaleDateString("fr-FR")}
+                  </span>
+                </div>
               </Link>
             );
           })}

@@ -37,96 +37,102 @@ export function AddItemForm({ wishlistId }: { wishlistId: string }) {
   }
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-3">
+    <form ref={formRef} action={formAction} className="space-y-4">
       <div>
-        <div className="mb-1 flex items-baseline justify-between">
-          <label htmlFor="title" className="text-sm font-medium text-gray-700">
+        <div className="mb-1.5 flex items-baseline justify-between">
+          <label htmlFor="add-title" className="label mb-0">
             Titre *
           </label>
           {title.length >= 100 && (
-            <span className={`text-xs tabular-nums ${title.length >= 120 ? "text-red-500" : "text-gray-400"}`}>
+            <span
+              className={`text-xs tabular-nums ${title.length >= 120 ? "text-red-500" : "text-warm-400"}`}
+            >
               {title.length}/120
             </span>
           )}
         </div>
         <input
-          id="title"
+          id="add-title"
           name="title"
           required
           maxLength={120}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          placeholder="Nom de l'article"
+          className="input"
         />
       </div>
 
       <div>
-        <label htmlFor="merchantUrl" className="mb-1 block text-sm font-medium text-gray-700">
-          Lien{isFetchingMeta && <span className="ml-2 text-xs font-normal text-gray-400">Chargement…</span>}
+        <label htmlFor="add-merchantUrl" className="label">
+          Lien marchand
+          {isFetchingMeta && (
+            <span className="ml-2 text-xs font-normal text-warm-400">Chargement…</span>
+          )}
         </label>
         <input
-          id="merchantUrl"
+          id="add-merchantUrl"
           name="merchantUrl"
           type="url"
           placeholder="https://..."
           onPaste={handleUrlPaste}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          className="input"
         />
       </div>
 
       <div className="flex gap-3">
         <div className="flex-1">
-          <label htmlFor="price" className="mb-1 block text-sm font-medium text-gray-700">
-            Prix
+          <label htmlFor="add-price" className="label">
+            Prix (€)
           </label>
           <input
-            id="price"
+            id="add-price"
             name="price"
             type="number"
             min="0"
             step="0.01"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+            placeholder="0.00"
+            className="input"
           />
         </div>
         <div className="flex-1">
-          <label htmlFor="imageUrl" className="mb-1 block text-sm font-medium text-gray-700">
+          <label htmlFor="add-imageUrl" className="label">
             Image (URL)
           </label>
           <input
-            id="imageUrl"
+            id="add-imageUrl"
             name="imageUrl"
             type="url"
             placeholder="https://..."
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+            className="input"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="note" className="mb-1 block text-sm font-medium text-gray-700">
-          Notes
+        <label htmlFor="add-note" className="label">
+          Note <span className="font-normal text-warm-400">(facultatif)</span>
         </label>
         <textarea
-          id="note"
+          id="add-note"
           name="note"
           rows={2}
           maxLength={500}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+          placeholder="Taille, couleur, préférence…"
+          className="input resize-none"
         />
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
-        {isPending ? "..." : "Ajouter l'item"}
+      <button type="submit" disabled={isPending} className="btn-primary">
+        {isPending ? "Ajout…" : "Ajouter l'item"}
       </button>
     </form>
   );

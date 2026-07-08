@@ -53,7 +53,7 @@ export function ItemList({
   }, [isOwner, wishlistId, items]);
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-4">
       {items.map((item) => (
         <ItemRow
           key={item.id}

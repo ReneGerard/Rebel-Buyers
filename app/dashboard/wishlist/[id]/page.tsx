@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/auth";
@@ -49,21 +50,29 @@ export default async function WishlistDetailPage({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-semibold">{wishlist.title}</h1>
+      <Link href="/dashboard" className="btn-ghost mb-6 inline-flex items-center gap-1">
+        ← Mes wishlists
+      </Link>
+
+      <h1 className="font-display text-3xl font-bold text-warm-900">{wishlist.title}</h1>
       {wishlist.description && (
-        <p className="mt-2 text-sm text-gray-600">{wishlist.description}</p>
+        <p className="mt-2 text-warm-500">{wishlist.description}</p>
       )}
 
-      <div className="mt-4">
+      <div className="mt-6">
         <ShareLinkField url={shareUrl} />
       </div>
 
-      <section className="mt-8">
-        <h2 className="mb-3 text-lg font-medium">Items</h2>
+      <section className="mt-10">
+        <h2 className="font-display mb-4 text-xl font-semibold text-warm-900">Items</h2>
         {items.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucun item pour le moment.</p>
+          <div className="card flex flex-col items-center py-14 text-center">
+            <span className="text-4xl">✨</span>
+            <p className="mt-4 font-medium text-warm-700">Aucun item pour le moment</p>
+            <p className="mt-1 text-sm text-warm-400">Ajoute le premier item via le formulaire ci-dessous.</p>
+          </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {items.map((item) => (
               <ItemRow key={item.id} item={item} wishlistId={wishlist.id} />
             ))}
@@ -71,8 +80,8 @@ export default async function WishlistDetailPage({
         )}
       </section>
 
-      <section className="mt-8 rounded-lg border border-gray-200 bg-white p-4">
-        <h2 className="mb-3 text-lg font-medium">Ajouter un item</h2>
+      <section className="card mt-8 p-6">
+        <h2 className="font-display mb-5 text-xl font-semibold text-warm-900">Ajouter un item</h2>
         <AddItemForm wishlistId={wishlist.id} />
       </section>
     </main>

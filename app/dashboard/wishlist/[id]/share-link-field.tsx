@@ -12,20 +12,25 @@ export function ShareLinkField({ url }: { url: string }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <input
-        readOnly
-        value={url}
-        onFocus={(event) => event.target.select()}
-        className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600"
-      />
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-      >
-        {copied ? "Copié !" : "Copier le lien"}
-      </button>
+    <div className="rounded-2xl border border-brand-100 bg-brand-50 p-4">
+      <p className="mb-2 text-xs font-medium uppercase tracking-wider text-brand-600">
+        Lien de partage
+      </p>
+      <div className="flex items-center gap-2">
+        <input
+          readOnly
+          value={url}
+          onFocus={(event) => event.target.select()}
+          className="flex-1 rounded-xl border border-warm-200 bg-white px-3 py-2 text-sm text-warm-600 focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={handleCopy}
+          className={`btn-primary transition-all ${copied ? "bg-green-600 hover:bg-green-700" : ""}`}
+        >
+          {copied ? "Copié !" : "Copier"}
+        </button>
+      </div>
     </div>
   );
 }

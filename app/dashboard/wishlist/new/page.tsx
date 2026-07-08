@@ -10,11 +10,11 @@ export default async function NewWishlistPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <main className="flex min-h-[calc(100dvh-3.5rem)] items-center justify-center px-4 py-12">
+      <div className="card w-full max-w-sm p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Nouvelle wishlist</h1>
-          <Link href="/dashboard" className="text-sm text-gray-500 underline">
+          <h1 className="font-display text-2xl font-bold text-warm-900">Nouvelle wishlist</h1>
+          <Link href="/dashboard" className="btn-ghost">
             Annuler
           </Link>
         </div>
