@@ -11,6 +11,10 @@ export type LinkMetadata = {
   price?: string;
 };
 
+// Fetches og:title, og:image, and product price meta tags from a URL.
+// Major retailers (Amazon, Etsy, Best Buy, etc.) return 403 due to TLS
+// fingerprint-based bot protection — no header change can bypass this.
+// Failures are silent; manual entry is the intended fallback.
 export async function fetchLinkMetadata(rawUrl: string): Promise<LinkMetadata | null> {
   try {
     const url = new URL(rawUrl);
