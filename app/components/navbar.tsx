@@ -10,8 +10,11 @@ export async function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-warm-200 bg-warm-50/80 backdrop-blur-sm">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
-          <Image src={logo} alt="Rebel Buyers" height={48} className="h-12 w-auto" />
+        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+          <Image src={logo} alt="" height={48} className="h-12 w-auto" />
+          <span className="font-display text-xl font-bold tracking-tight text-warm-900">
+            Rebel Buyers
+          </span>
         </Link>
         <div className="flex items-center gap-4">
           {user ? (
