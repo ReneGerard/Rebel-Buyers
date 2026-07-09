@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../../public/logo.png";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { signOut } from "../auth-actions";
 
@@ -8,11 +10,8 @@ export async function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-warm-200 bg-warm-50/80 backdrop-blur-sm">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link
-          href="/"
-          className="font-display text-xl font-bold tracking-tight text-warm-900 transition-colors hover:text-brand-500"
-        >
-          Rebel Buyers
+        <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
+          <Image src={logo} alt="Rebel Buyers" height={36} className="h-9 w-auto" />
         </Link>
         <div className="flex items-center gap-4">
           {user ? (
