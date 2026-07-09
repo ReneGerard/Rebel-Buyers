@@ -11,7 +11,7 @@ export async function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-warm-200 bg-warm-50/80 backdrop-blur-sm">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
-          <Image src={logo} alt="Rebel Buyers" height={36} className="h-9 w-auto" />
+          <Image src={logo} alt="Rebel Buyers" height={48} className="h-12 w-auto" />
         </Link>
         <div className="flex items-center gap-4">
           {user ? (
