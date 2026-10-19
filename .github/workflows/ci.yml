@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Placeholders: the build only needs the variables to exist, no request is made to Supabase.
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  # pgTAP privacy grid (supabase/tests/database). It is EXPECTED TO FAIL on the current schema
+  # (findings B, E, I, K, L, M, N, O in docs/security-audit.md) until the task 3 migration lands.
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.107.0
+      - name: Start local Supabase (database, auth and realtime only)
+        run: supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,supavisor,storage-api,postgres-meta
+      - name: Rebuild the database from supabase/migrations
+        run: supabase db reset
+      - name: Run the pgTAP privacy grid
+        run: supabase test db
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup
