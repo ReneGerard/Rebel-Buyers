@@ -1,6 +1,6 @@
 # Repairing the production migration history after the baseline
 
-Status: **written, not executed. Waits for the project owner's approval, in a separate session.**
+Status: **option A chosen by the project owner (2026-10-19). Written, not executed. Executing it waits for the owner's separate approval, in a separate session, once the preconditions below are met.**
 
 Why: `supabase/migrations/20260708110000_live_baseline.sql` replaces the four earlier files. The live
 `supabase_migrations.schema_migrations` table still lists those four versions and not the baseline. Without a repair,
