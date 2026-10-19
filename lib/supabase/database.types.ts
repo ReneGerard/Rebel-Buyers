@@ -61,27 +61,50 @@ export type Database = {
           },
         ]
       }
+      purchase_buyers: {
+        Row: {
+          buyer_name: string
+          buyer_user_id: string | null
+          purchase_id: string
+        }
+        Insert: {
+          buyer_name: string
+          buyer_user_id?: string | null
+          purchase_id: string
+        }
+        Update: {
+          buyer_name?: string
+          buyer_user_id?: string | null
+          purchase_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_buyers_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: true
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchases: {
         Row: {
           created_at: string
           id: string
           item_id: string
-          purchased_by_name: string | null
-          purchased_by_user_id: string | null
+          wishlist_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           item_id: string
-          purchased_by_name?: string | null
-          purchased_by_user_id?: string | null
+          wishlist_id: string
         }
         Update: {
           created_at?: string
           id?: string
           item_id?: string
-          purchased_by_name?: string | null
-          purchased_by_user_id?: string | null
+          wishlist_id?: string
         }
         Relationships: [
           {
@@ -89,6 +112,13 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: true
             referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_wishlist_id_fkey"
+            columns: ["wishlist_id"]
+            isOneToOne: false
+            referencedRelation: "wishlists"
             referencedColumns: ["id"]
           },
         ]
@@ -128,7 +158,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_shared_wishlist: { Args: { p_slug: string }; Returns: Json }
+      is_wishlist_owner: { Args: { p_wishlist_id: string }; Returns: boolean }
+      reserve_item: {
+        Args: { p_buyer_name: string; p_item_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

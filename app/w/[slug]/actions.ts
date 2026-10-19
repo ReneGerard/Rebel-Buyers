@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
 const purchaseSchema = z.object({
+  itemId: z.string().uuid("Item invalide"),
   purchasedByName: z
     .string()
     .trim()
@@ -19,6 +20,7 @@ export async function markAsPurchased(
   formData: FormData
 ): Promise<PurchaseActionState> {
   const parsed = purchaseSchema.safeParse({
+    itemId,
     purchasedByName: formData.get("purchasedByName"),
   });
 
@@ -27,16 +29,17 @@ export async function markAsPurchased(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("purchases").insert({
-    item_id: itemId,
-    purchased_by_name: parsed.data.purchasedByName,
+  const { error } = await supabase.rpc("reserve_item", {
+    p_item_id: parsed.data.itemId,
+    p_buyer_name: parsed.data.purchasedByName,
   });
 
   if (error) {
     if (error.code === "23505") {
       return { error: "Cet item a déjà été marqué comme acheté.", success: false };
     }
-    return { error: error.message, success: false };
+    // Every other failure (creator, unknown item, ...) gets the same message on purpose.
+    return { error: "Impossible de réserver cet item.", success: false };
   }
 
   return { error: null, success: true };
