@@ -16,7 +16,7 @@ create function public.__grid_default_probe_fn() returns int language sql as 'se
 -- One test per privilege: has_table_privilege with a list is true when ANY of them is held.
 select ok(
   has_table_privilege(r.role, 'public.__grid_default_probe', p.priv),
-  format('DEFAULTS: %s gets %s on a new table in public, as in production. This stack does not match production default privileges, so every REVOKE in the migrations would be tested vacuously. To align it: run "ALTER DEFAULT PRIVILEGES FOR ROLE %s IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role" (and the same for SEQUENCES and FUNCTIONS) before the migrations, or use a Supabase image/CLI version that sets them', r.role, p.priv, current_user)
+  format('DEFAULTS: %s gets %s on a new table in public, as in production. This stack does not match production default privileges, so every REVOKE in the migrations would be tested vacuously. The baseline migration 20260708110000_live_baseline.sql records them with ALTER DEFAULT PRIVILEGES FOR ROLE %s IN SCHEMA public; check that it ran as that role and that its statements are intact', r.role, p.priv, current_user)
 )
 from (values ('anon'), ('authenticated')) r(role)
 cross join (values ('SELECT'), ('INSERT'), ('UPDATE'), ('DELETE'), ('TRUNCATE')) p(priv);

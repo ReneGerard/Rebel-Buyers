@@ -204,6 +204,11 @@ $$;
 revoke execute on function public.is_wishlist_owner(uuid) from public, anon, authenticated;
 revoke execute on function public.reserve_item(uuid, text) from public, anon, authenticated;
 revoke execute on function public.get_shared_wishlist(text) from public, anon, authenticated;
+-- set_updated_at is a trigger function: Postgres checks EXECUTE when the trigger is created, not when
+-- it fires, so no client role needs it. The baseline copied its live grants to PUBLIC and the API roles.
+revoke execute on function public.set_updated_at() from public, anon, authenticated;
+-- is_wishlist_owner stays callable by anon and authenticated: it runs inside the purchases policy,
+-- which is evaluated with the privileges of the querying role.
 grant execute on function public.is_wishlist_owner(uuid) to anon, authenticated;
 grant execute on function public.reserve_item(uuid, text) to anon, authenticated;
 grant execute on function public.get_shared_wishlist(text) to anon, authenticated;
