@@ -32,8 +32,10 @@ yarn-error.log*
 # supabase local state
 supabase/.temp/
 
-# claude code session data
-.claude/
+# claude code session data (shared agents and settings stay tracked)
+.claude/*
+!.claude/agents/
+!.claude/settings.json
 
 # typescript
 *.tsbuildinfo
