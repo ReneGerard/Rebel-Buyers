@@ -8,7 +8,7 @@ Ordered by priority. Status: `todo` / `doing` / `done`. Every build session upda
 | # | Item | Status | Reason |
 |---|---|---|---|
 | 1 | Live baseline migration + `docs/security-audit.md` + untrack `supabase/.temp/` | doing | Audit doc, baseline migration (`20260708110000_live_baseline.sql`), regenerated types and `supabase/.temp/` untrack are done on `feature/task-1-baseline`. Left: `supabase db reset` check in a real Supabase stack (only a plain Postgres 16 was available), then the production history repair (docs/baseline-history-repair.md), which waits for owner approval. |
-| 2 | Test infrastructure + privacy grid (Vitest, CI, pgTAP) | todo | No tests exist; the grid must fail on the confirmed leaks before they are fixed. |
+| 2 | Test infrastructure + privacy grid (Vitest, CI, pgTAP) | doing | Done on `feature/task-2-test-infra`: Vitest, `test`/`typecheck` scripts, `tester.md`, `.github/workflows/ci.yml` (5 jobs), `supabase/config.toml`, pgTAP grid in `supabase/tests/database/`. Grid fails on the baseline for B, E, I, K, L, M, N, O (proved on a local Postgres 16 with pgTAP, not on the Supabase stack). Left: first real CI run (`supabase start`, `db reset`, `supabase test db`); the `database` job is red until task 3. |
 | 3 | Privacy fix (`reserve_item`, `purchase_buyers`, `get_shared_wishlist`, policies, grants, slug, FK) | todo | Any anonymous visitor can read buyer names and enumerate every list today (B, K). |
 | 4 | SSRF-safe fetch + auth on `fetchLinkMetadata` + generic JSON-LD extractor | todo | The metadata action is an unauthenticated SSRF proxy (G). |
 | 5 | Provider spike: SerpApi vs DataForSEO (terms first, US$50) | todo | Provider coverage, accuracy, cost and terms for Canada are unverified. |
@@ -36,9 +36,11 @@ Ordered by priority. Status: `todo` / `doing` / `done`. Every build session upda
 | 22 | Privacy notice (PIPEDA and Quebec Law 25) | todo | The app stores names and emails of Canadian users. |
 | 23 | README | todo | The README is one line; contributors need setup, env vars and test commands. |
 | 24 | Playwright worker for merchants that need a real browser | todo | Deferred out of the MVP; revisit only if the spike shows a measured gap. |
-| 25 | Add `supabase/config.toml` (`supabase init`) | todo | The repo has none, so `supabase db reset` and `supabase start` cannot run; needed by task 2 (CI pgTAP job). Found in task 1. |
-| 26 | `supabase` CLI not installed in the cloud session (`node_modules` absent) | todo | Run `npm ci` in the session setup so CLI commands (types, db reset, migration list) work. Found in task 1. |
-| 27 | Add `typecheck` script to `package.json` and run lint/typecheck in CI | todo | Lint and tsc were red on main unnoticed; covered by task 2 (CI), listed so it is not forgotten. Found in the lint/typecheck fix. |
+| 25 | Add `supabase/config.toml` (`supabase init`) | done | Added in task 2 (Postgres 17). Original reason: The repo has none, so `supabase db reset` and `supabase start` cannot run; needed by task 2 (CI pgTAP job). Found in task 1. |
+| 26 | `supabase` CLI not installed in the cloud session (`node_modules` absent) | todo | Still open: `npm ci` works by hand, and Supabase Docker images cannot be pulled from the cloud session (CloudFront 403), so `supabase start` is CI-only. Original: Run `npm ci` in the session setup so CLI commands (types, db reset, migration list) work. Found in task 1. |
+| 27 | Add `typecheck` script to `package.json` and run lint/typecheck in CI | done | Added in task 2. Original reason: Lint and tsc were red on main unnoticed; covered by task 2 (CI), listed so it is not forgotten. Found in the lint/typecheck fix. |
+| 28 | Task 3 constraint found by the grid: once `anon` loses SELECT on `wishlists`/`items`, the `purchases` SELECT policy subquery fails with permission denied. Keep a SELECT grant without policies, or use a SECURITY DEFINER helper | todo | Found in task 2; the creator-exclusion tests (`CREATOR-EXCL`) guard it. |
+| 29 | Task 3 must keep `supabase/tests/database/02_privacy_grid_rls.sql` green and extend it with function cases (`reserve_item`, `get_shared_wishlist`, PUBLIC EXECUTE) | todo | Sprint 1 task 3 definition of done. |
 
 ## Done
 
