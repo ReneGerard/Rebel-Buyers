@@ -24,8 +24,13 @@
 --   * set_updated_at body: live has CRLF line endings, this file uses LF (no behavior change).
 --   * Object ownership is left to the migration runner (postgres on Supabase; live owner is postgres).
 --   * Table and function grants to anon/authenticated/service_role are written out explicitly. On
---     Supabase they also come from default privileges (pg_default_acl, owner postgres, schema public),
---     so the explicit GRANTs are redundant there but make the file self-describing.
+--     Supabase they also come from default privileges (pg_default_acl, owner postgres, schema public).
+--     The first capture of this file missed pg_default_acl, so the default privileges were not
+--     recorded and a stack that lacks them (the local Supabase stack used by CI) tested later REVOKEs
+--     vacuously. They are now recorded by the ALTER DEFAULT PRIVILEGES statements right below this
+--     header. In production they already exist, so this changes nothing there (this file is only
+--     marked as applied during the history repair, never executed in production). Live values:
+--     tables arwdDxtm, sequences rwU, functions X, each to postgres, anon, authenticated, service_role.
 --   * Live runs Postgres 17, whose ALL privilege on tables includes MAINTAIN (relacl letter `m`).
 --     `grant all` reproduces it on 17; a Postgres 16 local database shows `arwdDxt` instead.
 --   * Extensions present live: plpgsql, pg_stat_statements, uuid-ossp, pgcrypto, supabase_vault. They
@@ -37,6 +42,18 @@
 --   * No sequences, views, enums, custom types, table or column comments, column-level grants or
 --     triggers other than the two below exist in schema public.
 --   * auth schema, storage, Auth settings and Realtime runtime behavior are out of scope.
+
+-- ---------------------------------------------------------------------------
+-- Default privileges (live pg_default_acl, role postgres, schema public). Objects created below,
+-- and by every later migration, are opened to the API roles unless the migration revokes it.
+-- ---------------------------------------------------------------------------
+
+alter default privileges for role postgres in schema public
+  grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges for role postgres in schema public
+  grant all on sequences to postgres, anon, authenticated, service_role;
+alter default privileges for role postgres in schema public
+  grant all on functions to postgres, anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
 -- Tables (column order matches live)

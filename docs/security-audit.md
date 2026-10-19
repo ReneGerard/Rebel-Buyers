@@ -40,6 +40,14 @@
 > - The free-tier project was auto-paused for inactivity and I restored it manually. A paid
 >   tier is required before real users.
 
+Update (2026-10-19, task 3b): the project owner re-checked production and it holds 1 wishlist,
+2 items and 0 purchases, not the 3 items and 1 purchase quoted above. The quote is kept verbatim.
+The Opus review of task 3 added two findings, both fixed in `20260709100000_privacy_fix.sql`:
+PATCHing `items.id` (or `wishlists.id`) as the creator raised the FK error 23503 on a taken item
+and succeeded on a free one (a purchase status oracle, a variant of E), and a client could change
+`items.wishlist_id`, so moving an item and deleting its old list dropped the reservation. Both are
+closed by column-limited UPDATE grants.
+
 ## Re-verification in this session (read-only SQL)
 
 ### purchases policies

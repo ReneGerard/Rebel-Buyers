@@ -46,6 +46,7 @@ Out of scope (Phase 2+, do not build without an explicit request):
 - Tables in snake_case, RLS enabled on ALL tables from day one
 - Supabase migrations versioned in supabase/migrations/
 - Never rely on critical business logic only on the client: duplicate validation in RLS policies
+- Every new table or function needs, in the same migration: RLS enabled, an explicit `REVOKE` of the default privileges (from `anon` and `authenticated`, and from `PUBLIC` for functions) and explicit `GRANT`s of only what is needed, because production opens new objects to `anon` and `authenticated` by default, and a pgTAP assertion for it in supabase/tests/database/.
 
 ## Git workflow
 - Branches: feature/short-name, fix/short-name
