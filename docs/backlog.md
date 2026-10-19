@@ -7,7 +7,7 @@ Ordered by priority. Status: `todo` / `doing` / `done`. Every build session upda
 
 | # | Item | Status | Reason |
 |---|---|---|---|
-| 1 | Live baseline migration + `docs/security-audit.md` + untrack `supabase/.temp/` | doing | The migrations cannot rebuild the live DB and `purchases` is in no migration (A, H, J); audit doc done, baseline and untrack remain. |
+| 1 | Live baseline migration + `docs/security-audit.md` + untrack `supabase/.temp/` | doing | Audit doc, baseline migration (`20260708110000_live_baseline.sql`), regenerated types and `supabase/.temp/` untrack are done on `feature/task-1-baseline`. Left: `supabase db reset` check in a real Supabase stack (only a plain Postgres 16 was available), then the production history repair (docs/baseline-history-repair.md), which waits for owner approval. |
 | 2 | Test infrastructure + privacy grid (Vitest, CI, pgTAP) | todo | No tests exist; the grid must fail on the confirmed leaks before they are fixed. |
 | 3 | Privacy fix (`reserve_item`, `purchase_buyers`, `get_shared_wishlist`, policies, grants, slug, FK) | todo | Any anonymous visitor can read buyer names and enumerate every list today (B, K). |
 | 4 | SSRF-safe fetch + auth on `fetchLinkMetadata` + generic JSON-LD extractor | todo | The metadata action is an unauthenticated SSRF proxy (G). |
@@ -36,6 +36,8 @@ Ordered by priority. Status: `todo` / `doing` / `done`. Every build session upda
 | 22 | Privacy notice (PIPEDA and Quebec Law 25) | todo | The app stores names and emails of Canadian users. |
 | 23 | README | todo | The README is one line; contributors need setup, env vars and test commands. |
 | 24 | Playwright worker for merchants that need a real browser | todo | Deferred out of the MVP; revisit only if the spike shows a measured gap. |
+| 25 | Add `supabase/config.toml` (`supabase init`) | todo | The repo has none, so `supabase db reset` and `supabase start` cannot run; needed by task 2 (CI pgTAP job). Found in task 1. |
+| 26 | `supabase` CLI not installed in the cloud session (`node_modules` absent) | todo | Run `npm ci` in the session setup so CLI commands (types, db reset, migration list) work. Found in task 1. |
 
 ## Done
 
