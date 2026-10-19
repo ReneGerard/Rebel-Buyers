@@ -10,6 +10,8 @@
       "Bash(git commit *)",
       "Bash(git push origin feature/*)",
       "Bash(git push -u origin feature/*)",
+      "Bash(git push origin claude/*)",
+      "Bash(git push -u origin claude/*)",
       "Bash(npm run lint)",
       "Bash(npm run build)",
       "Bash(npm run typecheck)",
@@ -91,7 +93,8 @@
       "Bash(find * -exec*)",
       "mcp__Supabase__rebase_branch",
       "mcp__plugin_supabase_supabase__rebase_branch",
-      "mcp__claude_ai_Supabase__rebase_branch"
+      "mcp__claude_ai_Supabase__rebase_branch",
+      "Bash(git push * :*)"
     ]
   }
 }
