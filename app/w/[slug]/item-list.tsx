@@ -35,7 +35,12 @@ export function ItemList({
       .channel(`purchases-${wishlistId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "purchases" },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "purchases",
+          filter: `wishlist_id=eq.${wishlistId}`,
+        },
         (payload) => {
           const purchasedItemId = (payload.new as { item_id: string }).item_id;
           if (!itemIds.has(purchasedItemId)) return;

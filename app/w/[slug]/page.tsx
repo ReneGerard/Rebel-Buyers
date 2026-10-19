@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ItemList } from "./item-list";
+import { sharedWishlistSchema } from "./shared-wishlist";
 
 export default async function PublicWishlistPage({
   params,
@@ -11,46 +11,21 @@ export default async function PublicWishlistPage({
   const { slug } = await params;
   const supabase = await createClient();
 
-  const { data: wishlist } = await supabase
-    .from("wishlists")
-    .select("id, owner_id, title, description")
-    .eq("share_slug", slug)
-    .maybeSingle();
+  // The database function returns the list, its items and a "taken" flag (null for the creator).
+  const { data, error } = await supabase.rpc("get_shared_wishlist", { p_slug: slug });
 
-  if (!wishlist) {
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (data === null) {
     notFound();
   }
 
-  const { data: items, error: itemsError } = await supabase
-    .from("items")
-    .select("id, title, merchant_url, price, image_url, note, created_at")
-    .eq("wishlist_id", wishlist.id)
-    .order("created_at", { ascending: false });
-
-  if (itemsError) {
-    throw new Error(itemsError.message);
-  }
-
-  const user = await getCurrentUser();
-  const isOwner = user?.id === wishlist.owner_id;
-
-  // The owner must never see purchase status — skip the query entirely.
-  let purchasedItemIds: string[] = [];
-  if (!isOwner && items.length > 0) {
-    const { data: purchases, error: purchasesError } = await supabase
-      .from("purchases")
-      .select("item_id")
-      .in(
-        "item_id",
-        items.map((item) => item.id)
-      );
-
-    if (purchasesError) {
-      throw new Error(purchasesError.message);
-    }
-
-    purchasedItemIds = purchases.map((purchase) => purchase.item_id);
-  }
+  const wishlist = sharedWishlistSchema.parse(data);
+  const isOwner = wishlist.is_owner;
+  const items = wishlist.items;
+  const purchasedItemIds = items.filter((item) => item.taken === true).map((item) => item.id);
 
   return (
     <>
