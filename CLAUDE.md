@@ -1,52 +1,87 @@
 # Rebel Buyers — Claude Code Project Instructions
 
-## Vision (résumé)
-Application web de wishlist neutre (multi-marchands), permettant l'achat coordonné
-de cadeaux sans dévoiler au créateur quel item a été acheté/par qui.
-Phase actuelle : **MVP / Proof of Concept**.
+## Vision
+Neutral multi-merchant gift wishlist web app. Buyers coordinate gift purchases without 
+revealing to the list creator which item was bought or by whom. When a product is added, 
+the app finds offers across several merchants and surfaces the best price (Google 
+Shopping style).
+Current phase: MVP / proof of concept.
 
-## Scope du MVP — NE PAS dépasser sans validation explicite
-✅ Dans le scope :
+## MVP scope — DO NOT exceed without explicit validation
+In scope:
 - Auth (email/password via Supabase Auth)
-- CRUD wishlist (titre, description)
-- CRUD item (titre, lien marchand, prix optionnel, image URL, note)
-- Partage de liste via lien public (lecture seule pour invités non-auth)
-- Marquer un item "acheté" (visible aux autres invités, PAS au créateur de la liste)
-- Sync temps réel via Supabase Realtime
+- Wishlist CRUD (title, description)
+- Item CRUD (title, merchant link, optional price, image URL, note)
+- Public share link (read-only for non-authenticated guests)
+- Mark an item "purchased" (visible to other guests, NOT to the list creator)
+- Realtime sync via Supabase Realtime
+- Price comparison: when a user adds a product (name, merchant URL, or typed UPC), the 
+  app retrieves offers from several merchants, stores them, shows the best price, 
+  refreshes them over time and keeps a price history. Architecture is defined in 
+  docs/price-comparison.md once decided; until it exists, ask before building.
 
-❌ Hors scope (Phase 2+, ne pas construire sans demande explicite) :
-- Comparateur de prix / scraping marchands
-- Scan UPC / caméra
-- Publicité marchands, affiliation
-- App mobile native (React Native) — PWA seulement pour l'instant
+Out of scope (Phase 2+, do not build without an explicit request):
+- Camera / barcode scanning
+- Merchant ads, affiliate monetization
+- Native mobile app (React Native) — PWA only for now
 
-## Stack technique
-- Next.js 14+ (App Router), TypeScript strict
-- Tailwind CSS pour le styling
-- Supabase : Postgres + Auth + Realtime + Storage
-- Déploiement : Vercel (preview deploys sur chaque PR)
-- Pas de state management externe (Zustand/Redux) tant que pas justifié
+## Stack
+- Next.js 16 (App Router), React 19, TypeScript strict
+- Tailwind CSS 4
+- Supabase: Postgres + Auth + Realtime + Storage
+- zod for validation
+- Deployment: Vercel (preview deploy on every PR)
+- No external state management (Zustand/Redux) unless justified
 
-## Conventions de code
-- Tout le code, noms de variables, commentaires : **en anglais**
-- Communication conversationnelle avec l'utilisateur : français OK
-- Composants : functional components + hooks uniquement
-- Server Components par défaut, Client Components ("use client") seulement si interactivité requise
-- Validation des inputs côté serveur ET client (zod recommandé)
-- Pas de `any` en TypeScript — typer explicitement ou utiliser `unknown`
-- Erreurs : toujours gérées explicitement, jamais de silent fail
+## Code conventions
+- All code, variable names, comments: in English
+- Conversation with the user: French is fine
+- Functional components + hooks only
+- Server Components by default; Client Components ("use client") only when interactivity requires it
+- Validate inputs server-side AND client-side (zod)
+- No `any` in TypeScript: type explicitly or use `unknown`
+- Errors are always handled explicitly, never silent
 
-## Base de données — conventions
-- Tables en snake_case, RLS (Row Level Security) activé sur TOUTES les tables dès le départ
-- Migrations Supabase versionnées dans `supabase/migrations/`
-- Jamais de logique métier critique seulement côté client — dupliquer la validation en RLS policies
+## Database conventions
+- Tables in snake_case, RLS enabled on ALL tables from day one
+- Supabase migrations versioned in supabase/migrations/
+- Never rely on critical business logic only on the client: duplicate validation in RLS policies
 
-## Workflow Git
-- Branches : `feature/nom-court`, `fix/nom-court`
-- Commits descriptifs, en français ou anglais, peu importe — mais clairs
-- Ne jamais commit `.env.local` ou clés API
+## Git workflow
+- Branches: feature/short-name, fix/short-name
+- Clear commit messages, French or English
+- Never commit .env.local or API keys
 
-## Quand tu n'es pas sûr du scope
-Si une demande semble élargir le MVP (ex: "ajoute le scan UPC"), le signaler
-explicitement avant de coder : "Ceci est hors du scope MVP défini — veux-tu
-que je le développe quand même ou qu'on le mette au backlog Phase 2 ?"
+## Price comparison rules
+- Headless-browser scraping (Playwright) never runs inside Vercel serverless functions. 
+  Static HTML / JSON-LD / OpenGraph extraction and third-party data-provider API calls may.
+- Every fetch of a user-supplied URL must be SSRF-safe: http/https only, resolve the host 
+  and block private, loopback and link-local ranges, enforce timeouts and size limits.
+- Provider API calls are cached; never call a provider twice for the same query within 
+  the cache window. Only refresh products that belong to active lists.
+- One adapter per merchant behind a common interface. A failing adapter degrades gracefully 
+  (item stays usable, price missing), never breaks the page.
+- Per-domain rate limiting. Check robots.txt/ToS before adding a merchant adapter and note 
+  the result in the adapter file.
+- Product matching uses GTIN/UPC or model number first; otherwise the user confirms a candidate.
+- Offer and price data live in Supabase with RLS like everything else.
+- Every adapter ships with saved HTML/JSON fixtures so it can be tested offline.
+
+## Agent orchestration
+- Use the `tester` subagent to run lint, typecheck and build after any code change.
+- Use the `file-editor` subagent for mechanical edits (renames, find/replace, moving files) 
+  that need no architectural decision.
+- Use the `reviewer` subagent before every commit. Never commit without a BLOCK/WARN/OK 
+  report. Fix every BLOCK first.
+
+## Working rules
+- Run independent tool calls in parallel.
+- Keep solutions minimal: no features, refactors, abstractions or defensive code beyond what the task needs.
+- Be direct and specific. State real uncertainty once, plainly. No praise, no padding.
+- On auth, RLS policies, or anything touching user data: surface the decision before implementing.
+- On schema changes: list all affected files (migrations, database.types.ts, server actions, 
+  components) before touching any of them.
+
+## When unsure about scope
+If a request seems to widen the MVP (e.g. "add barcode scanning"), say so before coding: 
+"This is outside the defined MVP scope. Build it anyway, or put it in the Phase 2 backlog?"
