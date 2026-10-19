@@ -38,9 +38,11 @@ Ordered by priority. Status: `todo` / `doing` / `done`. Every build session upda
 | 24 | Playwright worker for merchants that need a real browser | todo | Deferred out of the MVP; revisit only if the spike shows a measured gap. |
 | 25 | Add `supabase/config.toml` (`supabase init`) | todo | The repo has none, so `supabase db reset` and `supabase start` cannot run; needed by task 2 (CI pgTAP job). Found in task 1. |
 | 26 | `supabase` CLI not installed in the cloud session (`node_modules` absent) | todo | Run `npm ci` in the session setup so CLI commands (types, db reset, migration list) work. Found in task 1. |
+| 27 | Add `typecheck` script to `package.json` and run lint/typecheck in CI | todo | Lint and tsc were red on main unnoticed; covered by task 2 (CI), listed so it is not forgotten. Found in the lint/typecheck fix. |
 
 ## Done
 
 | Item | Status | Reason |
 |---|---|---|
 | Planning docs (`docs/price-comparison.md`, `docs/sprint-1.md`, `docs/backlog.md`, `docs/decisions.md`, `docs/security-audit.md`) | done | Architecture and sprint plan written down before any build work. |
+| Fix `npm run lint` and `npx tsc --noEmit` on main | done | `react-hooks/set-state-in-effect` in `add-item-form.tsx` and unresolved `public/logo.png` import in `navbar.tsx`; both fixed on `feature/fix-lint-typecheck`, lint, tsc and build green. |
