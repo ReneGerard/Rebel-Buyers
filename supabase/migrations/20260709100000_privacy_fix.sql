@@ -10,7 +10,9 @@
 --     readable by guests, so lists cannot be enumerated (B);
 --   * the creator-exclusion on purchases goes through the SECURITY DEFINER helper
 --     is_wishlist_owner(), so anon needs no privilege at all on wishlists/items;
---   * one policy per command on every table (M), no TRUNCATE or other excess grants (L);
+--   * one policy per command on every table (M), no TRUNCATE or other excess grants (L); UPDATE on
+--     wishlists and items is granted per column, so ids and wishlist_id are not client-writable
+--     (no purchase status oracle through the FKs, no moving an item to drop its reservation);
 --   * set_updated_at has a pinned search_path (O), share_slug comes from gen_random_bytes (I),
 --     the buyer user FK is ON DELETE SET NULL (N);
 --   * purchases stays in the supabase_realtime publication (D); the client subscription filters on
@@ -292,9 +294,20 @@ revoke all on table public.wishlists from anon, authenticated;
 revoke all on table public.items from anon, authenticated;
 revoke all on table public.purchases from anon, authenticated;
 
-grant select, insert, update, delete on table public.wishlists to authenticated;
-grant select, insert, update, delete on table public.items to authenticated;
+grant select, insert, delete on table public.wishlists to authenticated;
+grant select, insert, delete on table public.items to authenticated;
 grant select on table public.purchases to anon, authenticated;
+
+-- UPDATE is limited to the columns the app edits. A table-wide UPDATE would let the creator PATCH
+-- id: the foreign keys to it (purchases_item_id_fkey, purchases_wishlist_id_fkey, no ON UPDATE
+-- CASCADE) would then raise 23503 on a taken item or list and succeed on a free one, a purchase
+-- status oracle. It would also allow items.wishlist_id to change, moving an item to another list of
+-- the same creator; deleting the old list would then cascade-delete the reservation through
+-- purchases.wishlist_id. id, wishlist_id, owner_id, share_slug and the timestamps stay
+-- unwritable; updated_at is set by the set_updated_at trigger, which needs no privilege.
+-- position is not written by the app yet.
+grant update (title, merchant_url, price, image_url, note, position) on table public.items to authenticated;
+grant update (title, description) on table public.wishlists to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- share_slug (I): 96 random bits from pgcrypto (extensions schema on Supabase, qualified because

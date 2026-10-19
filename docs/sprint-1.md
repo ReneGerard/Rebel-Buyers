@@ -8,7 +8,7 @@ Models: **Opus** plans, audits and reviews SQL; **Sonnet** builds; **Haiku** sub
 
 ## Rules for every database change in this sprint
 
-- The production data is test-only (2 users, 1 wishlist, 3 items, 1 purchase), so there is no backfill.
+- The production data is test-only (1 wishlist, 2 items, 0 purchases, re-checked by the owner), so there is no backfill.
 - A staging project is not a blocker for the privacy fix.
 - Before anything is applied to production:
   1. the project owner dumps the 3 tables to a local file;
