@@ -1,0 +1,22 @@
+# Decision log
+
+Newest last. Every build session adds the decisions it made (see CLAUDE.md, "Working rules").
+
+| Date | Decision | Reason |
+|---|---|---|
+| 2026-10-19 | The privacy guarantee covers the creator's signed-in account: it can never read purchase data through tables, RPC, Realtime or server actions. A creator who opens the public share link signed out sees what any guest sees; this is an accepted limit. | The share link is public by design; requiring guests to sign in adds friction and a creator could still use a second account. |
+| 2026-10-19 | No client role can read the buyer's name or user id; guests only see "taken / not taken". Buyer identity moves to a `purchase_buyers` table with no policies and no client grants. | The UI never shows the buyer; storing identity where no client can read it is the smallest attack surface. |
+| 2026-10-19 | Privacy fix goes before the provider spike. | The live audit confirmed buyer names are readable by every visitor (finding K). |
+| 2026-10-19 | Production data is test-only, so the privacy fix needs no backfill and no staging project first. Before applying to production: the owner dumps the 3 tables, the migration passes the privacy grid on a local Supabase in CI, and the owner approves the apply in a separate session. | Keeps the fix fast without applying untested SQL to production. |
+| 2026-10-19 | Claude sessions use the Supabase connector read-only (list tables, list migrations, advisors, SELECT). | Production changes need explicit owner approval. |
+| 2026-10-19 | The live baseline migration is reconstructed from the catalog with read-only queries, not from `supabase db dump`. | Works from a cloud session with the read-only connector. |
+| 2026-10-19 | Test infrastructure and the privacy grid are one task; the grid must fail on the current schema for every confirmed finding. | A grid that has never failed proves nothing. |
+| 2026-10-19 | Realtime integration tests are deferred to the backlog. | The pgTAP grid covers the policies Realtime relies on; Realtime tests need extra setup that should not block the privacy fix. |
+| 2026-10-19 | Offer discovery and refresh use a third-party shopping-data provider; the spike compares SerpApi and DataForSEO on 20 products, budget US$50, terms checked before any spend. | One provider call returns every merchant; large Canadian merchants block plain fetches. |
+| 2026-10-19 | Product and offer catalog tables (`products`, `offers`, `price_history`) are publicly readable; only the server writes them. | Merchant data only, no identities; avoids a second read path for guests. |
+| 2026-10-19 | Default extraction is one generic JSON-LD/OpenGraph extractor; per-merchant adapters only where it fails. Replaces "one adapter per merchant" in CLAUDE.md. | Most merchants publish structured data; per-merchant code is only worth it where the generic path fails. |
+| 2026-10-19 | Best price: CAD only, new condition, price plus shipping, stored as integer cents. | Canadian market; integer cents avoid rounding errors; shipping changes which offer is cheapest. |
+| 2026-10-19 | Playwright worker is out of the MVP. | It adds infrastructure and credentials outside Vercel, and sites needing a real browser usually forbid scraping; revisit only on measured need. |
+| 2026-10-19 | A paid Supabase tier is required before real users. | Free projects auto-pause for inactivity (finding Q). |
+| 2026-10-19 | zod validation is mandatory, on the server and the client. | CLAUDE.md states it as a rule ("Validate inputs server-side AND client-side (zod)"), no longer a recommendation. |
+| 2026-10-19 | Every build session updates docs/backlog.md and docs/decisions.md in the same PR as the code. | Keeps the plan and the code in sync across agent sessions. |
