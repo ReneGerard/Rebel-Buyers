@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { createItem, fetchLinkMetadata, type ItemActionState } from "./actions";
 
 const initialState: ItemActionState = { error: null, success: false };
@@ -8,21 +8,24 @@ const initialState: ItemActionState = { error: null, success: false };
 export function AddItemForm({ wishlistId }: { wishlistId: string }) {
   const action = createItem.bind(null, wishlistId);
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const [title, setTitle] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [price, setPrice] = useState("");
   const [isFetchingMeta, startMetaFetch] = useTransition();
 
-  useEffect(() => {
+  // Reset after a successful submit: remounting the form clears the uncontrolled fields.
+  const [handledState, setHandledState] = useState(state);
+  const [formKey, setFormKey] = useState(0);
+  if (state !== handledState) {
+    setHandledState(state);
     if (state.success) {
-      formRef.current?.reset();
+      setFormKey((k) => k + 1);
       setTitle("");
       setImageUrl("");
       setPrice("");
     }
-  }, [state]);
+  }
 
   function handleUrlPaste(e: React.ClipboardEvent<HTMLInputElement>) {
     const url = e.clipboardData.getData("text").trim();
@@ -37,7 +40,7 @@ export function AddItemForm({ wishlistId }: { wishlistId: string }) {
   }
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
+    <form key={formKey} action={formAction} className="space-y-4">
       <div>
         <div className="mb-1.5 flex items-baseline justify-between">
           <label htmlFor="add-title" className="label mb-0">
