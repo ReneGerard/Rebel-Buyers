@@ -75,7 +75,9 @@ Fixes A, H, J.
 
 **Model:** Opus designs the grid; Sonnet implements; Haiku edits the scripts and `tester.md`.
 
-### 3. Privacy fix
+### 3. Privacy fix (includes 3b, the privacy hardening)
+
+**Status: done and applied to production on 2026-10-20** (`20260709100000_privacy_fix.sql` and the baseline history repair, applied by the owner from the SQL Editor). Follow-ups are in docs/backlog.md items 36 to 45.
 
 Fixes B, C (remaining part), D, E, I, K, L, M, N, O.
 
